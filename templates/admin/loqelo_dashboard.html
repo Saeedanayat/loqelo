@@ -1,0 +1,81 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#11191d">
+  <title>Loqelo Control Center</title>
+  <link rel="stylesheet" href="{% static 'css/admin-dashboard.css' %}">
+</head>
+<body class="dashboard-body">
+  <aside class="admin-sidebar">
+    <a class="admin-brand" href="{% url 'admin_dashboard' %}">
+      <span class="brand-mark">L</span><span><strong>loqelo</strong><small>CONTROL CENTER</small></span>
+    </a>
+    <div class="sidebar-label">WORKSPACE</div>
+    <a class="side-link active" href="{% url 'admin_dashboard' %}"><span class="side-icon">◫</span> Overview</a>
+    <a class="side-link" href="{% url 'admin:waitlist_signup_changelist' %}"><span class="side-icon">◎</span> Waitlist signups <span class="side-count">{{ total }}</span></a>
+    <div class="sidebar-label">ADMINISTRATION</div>
+    <a class="side-link" href="{% url 'admin:auth_user_changelist' %}"><span class="side-icon">♙</span> Admin users</a>
+    <a class="side-link" href="{% url 'admin:password_change' %}"><span class="side-icon">⌑</span> Change password</a>
+    <div class="sidebar-bottom">
+      <div class="online-indicator"><span></span> Local workspace</div>
+      <div class="admin-user"><span class="user-avatar">{{ request.user.username|slice:":1"|upper }}</span><span><strong>{{ request.user.username }}</strong><small>Administrator</small></span><a href="{% url 'admin:logout' %}" title="Log out" aria-label="Log out">↗</a></div>
+    </div>
+  </aside>
+  <main class="admin-main">
+    <header class="dashboard-topbar">
+      <div><span class="breadcrumb">LOQELO / <strong>OVERVIEW</strong></span><h1>Good to see you, {{ request.user.username }}.</h1><p>Here’s what’s happening with your launch community.</p></div>
+      <div class="topbar-actions"><span class="launch-pill"><i></i> LAUNCHING FEB 2027</span><a class="view-site" href="{% url 'home' %}" target="_blank" rel="noopener">View website <span>↗</span></a></div>
+    </header>
+
+    <section class="stats-grid" aria-label="Waitlist statistics">
+      <article class="stat-card stat-highlight"><div class="stat-card-top"><span>Total signups</span><span class="stat-icon">◎</span></div><strong class="stat-value">{{ total }}</strong><div class="stat-foot"><span class="stat-dot"></span> All saved registrations</div><div class="stat-spark spark-one"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></article>
+      <article class="stat-card"><div class="stat-card-top"><span>Customers</span><span class="stat-icon">⌂</span></div><strong class="stat-value">{{ customers }}</strong><div class="stat-foot">People looking for help</div><div class="stat-track"><span style="width:{% if total %}{% widthratio customers total 100 %}{% else %}0{% endif %}%"></span></div></article>
+      <article class="stat-card"><div class="stat-card-top"><span>Service providers</span><span class="stat-icon">✳</span></div><strong class="stat-value">{{ providers }}</strong><div class="stat-foot">People offering services</div><div class="stat-track"><span style="width:{% if total %}{% widthratio providers total 100 %}{% else %}0{% endif %}%"></span></div></article>
+      <article class="stat-card"><div class="stat-card-top"><span>Consent rate</span><span class="stat-icon">✓</span></div><strong class="stat-value">{{ consent_rate }}<small>%</small></strong><div class="stat-foot">Marketing consent recorded</div><div class="stat-track"><span style="width:{{ consent_rate }}%"></span></div></article>
+    </section>
+
+    <section class="dashboard-grid">
+      <article class="panel activity-panel">
+        <div class="panel-heading"><div><span class="panel-eyebrow">GROWTH OVERVIEW</span><h2>Signup activity</h2><p>Registrations over the last 7 days</p></div><span class="chart-period">LAST 7 DAYS <span>⌄</span></span></div>
+        <div class="chart-total"><strong>{{ weekly_total }}</strong><span>new signups in 7 days</span></div>
+        <div class="activity-chart">
+          <div class="chart-guides"><span></span><span></span><span></span><span></span></div>
+          {% for day in daily_counts %}
+          <div class="chart-column"><div class="bar-wrap"><span class="chart-bar {% if day.count %}has-data{% endif %}" style="height:{{ day.height }}%"><b>{{ day.count }}</b></span></div><span class="chart-day">{{ day.label }}</span></div>
+          {% endfor %}
+        </div>
+        <div class="chart-foot"><span><i></i> New signups</span><span>7-day view</span></div>
+      </article>
+      <article class="panel country-panel">
+        <div class="panel-heading"><div><span class="panel-eyebrow">COMMUNITY REACH</span><h2>Top countries</h2><p>Where signups come from</p></div><span class="panel-icon">⌖</span></div>
+        {% if top_countries %}
+          <div class="country-list">
+          {% for country in top_countries %}
+            <div class="country-row"><div class="country-name"><span class="country-rank">0{{ forloop.counter }}</span><strong>{{ country.country }}</strong></div><div class="country-count">{{ country.count }} <small>{% if country.count == 1 %}signup{% else %}signups{% endif %}</small></div><div class="country-meter"><span style="width:{% widthratio country.count total 100 %}%"></span></div></div>
+          {% endfor %}
+          </div>
+        {% else %}
+          <div class="empty-state"><span>⌖</span><strong>No countries yet</strong><p>Country statistics will appear as people join.</p></div>
+        {% endif %}
+        <a class="panel-link" href="{% url 'admin:waitlist_signup_changelist' %}">Explore all signups <span>↗</span></a>
+      </article>
+    </section>
+
+    <section class="panel recent-panel">
+      <div class="panel-heading recent-heading"><div><span class="panel-eyebrow">LATEST ACTIVITY</span><h2>Recent signups</h2><p>Your newest waitlist registrations</p></div><a class="table-action" href="{% url 'admin:waitlist_signup_changelist' %}">Manage signups <span>↗</span></a></div>
+      <div class="table-scroll"><table><thead><tr><th>EMAIL ADDRESS</th><th>WAITLIST</th><th>COUNTRY</th><th>ACCOUNT TYPE</th><th>CONSENT</th><th>DATE ADDED</th></tr></thead><tbody>
+      {% for signup in recent_signups %}
+      <tr><td><span class="email-avatar">{{ signup.email|slice:":1"|upper }}</span><strong>{{ signup.email }}</strong></td><td><span class="type-badge {% if signup.group == 'contractor' %}provider-badge{% else %}customer-badge{% endif %}">{{ signup.get_group_display }}</span></td><td>{{ signup.country|default:"—" }}</td><td>{{ signup.get_account_type_display|default:"Not specified" }}</td><td><span class="consent-status {% if signup.marketing_consent %}consent-yes{% else %}consent-no{% endif %}"><i></i>{% if signup.marketing_consent %}Granted{% else %}No{% endif %}</span></td><td class="date-cell">{{ signup.created_at|date:"M j, Y" }}</td></tr>
+      {% empty %}
+      <tr><td colspan="6"><div class="empty-table"><strong>No signups yet</strong><span>When visitors join the waitlist, they’ll show up here.</span></div></td></tr>
+      {% endfor %}
+      </tbody></table></div>
+      <div class="table-footer"><span>Showing <strong>{{ recent_signups|length }}</strong> recent registrations</span><a href="{% url 'admin:waitlist_signup_changelist' %}">Open full signup manager <span>→</span></a></div>
+    </section>
+    <footer class="dashboard-footer"><span>LOQELO CONTROL CENTER</span><span>Built for a better way to get things done <i>✳</i></span></footer>
+  </main>
+</body>
+</html>

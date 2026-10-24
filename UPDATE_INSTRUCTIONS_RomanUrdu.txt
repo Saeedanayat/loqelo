@@ -1,0 +1,33 @@
+LOQELO ENHANCEMENT UPDATE — INSTALLATION NOTES
+
+This update is based on the project ZIP you supplied and includes:
+- Your 81-second promotional MP4 embedded in a responsive video section.
+- Scroll reveal transitions, gentle hero motion, hover lift effects and reduced-motion support.
+- Custom dark charcoal + teal Django dashboard at /admin/.
+- Signup statistics, 7-day signup chart, top countries and latest signup table.
+- Existing Django SignupAdmin search, filters and CSV export retained, with a dark theme.
+
+IMPORTANT: Your existing database is not included in this update ZIP. Do not delete or replace your local db.sqlite3, .env, or .venv.
+
+SAFE INSTALL ON WINDOWS
+1. Stop the local server in its CMD window with Ctrl+C.
+2. Make a backup copy of your current project folder (especially db.sqlite3 and .env).
+3. Extract this ZIP to a separate temporary folder.
+4. Open the extracted loqelo_website folder.
+5. Copy these folders/files into your currently running project's loqelo_website folder and choose Replace when Windows asks:
+   - waitlist folder
+   - loqelo folder
+   - templates folder
+   - static folder
+   - README.md (optional)
+6. Do NOT copy a db.sqlite3, .env, or .venv into your project. This update ZIP intentionally does not contain them.
+7. In CMD, go to your current project folder (the one containing manage.py), activate your existing venv, then run:
+      python manage.py check
+      python manage.py runserver
+8. Open http://127.0.0.1:8000/ and test the video, scroll animations, and signup form.
+9. Open http://127.0.0.1:8000/admin/ and sign in using your existing Django staff account.
+10. Click "Waitlist signups" in the sidebar to reach the existing signup manager. Test search, filters and CSV export.
+
+No database migration is required for these UI changes. The dashboard reads existing Signup records and does not create, edit or delete them.
+
+If `python manage.py check` reports an error, keep the terminal output and share the error text (do not share passwords or your .env secrets).
