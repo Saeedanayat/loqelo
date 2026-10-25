@@ -60,20 +60,20 @@ TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
 
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
 
 STATICFILES_DIRS = [BASE_DIR / "static"]
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 STORAGES = {
     "default": {
         "BACKEND": "django.core.files.storage.FileSystemStorage",
     },
     "staticfiles": {
-        "BACKEND":"whitenoise.storage.CompressedStaticFilesStorage",
+        "BACKEND":"whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
 }
 
-STATIC_ROOT = BASE_DIR / "staticfiles"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 GA4_MEASUREMENT_ID = os.getenv("GA4_MEASUREMENT_ID", "").strip()
